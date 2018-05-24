@@ -8,16 +8,56 @@
 	$(document).ready(function() {
 		$("#parentSelectBox").change(function() {
 			var thisParam = this.value;
+			
+			var form = {"param" : thisParam};
+			
+			/* type:"POST"랑 contentType은 짝궁이다. */
 			$.ajax({
 				url :"childSelectBox.do",
-				data:{"param" : thisParam},
+				data:JSON.stringify(form),
+				type:"POST",
+				contentType : "application/json",
 				success : function(data) {
+					var jObj = JSON.parse(data);
 					
+					//console.log(data);
+					//console.log(jObj);
+					
+					if (jObj.result === "SUCCESS") {
+						$("#childSelectBox").children().remove();
+						select.displayChildSelectBox(jObj.list);
+					}
 				}
 			
 			})	
 		})
 	});
+	
+	var select = {
+			displayChildSelectBox : function(list) {
+				
+				if (list.length > 0) {
+					console.log(list);
+					
+					/* each
+					  list는 반복문 돌릴 대상
+					  i는 인덱스 ,  item은 인덱스의 value값
+					*/
+					$.each(list, function(i,item) {
+						//console.log(list);
+						//console.log(i);
+						//console.log(item);
+						
+						var optionStr = "<option value=" +item.prdCd + ">"
+									+ item.prdNm + "</option>";
+									
+						$("#childSelectBox").append(optionStr);
+					})
+				} else {
+					$("#childSelectBox").append("<option value=''>없음</option>");
+				}
+			}
+	}
 	
 </script>
 <div class="content">
